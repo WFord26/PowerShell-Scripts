@@ -47,9 +47,10 @@ In this option we will be removing the Business Premium License and adding the B
    2. To Remove licences
    3. To Replace licenes
    4. Q To Quit
-![Options](../../ref/images/options-lic.png)
-6. If your option was between 1-3 you will be prompted for license selection. (In this instance I will be going over a Add and Remove) 
-7. Select the licenses that you would like to add to the accounts. 
+
+    ![Options](../../ref/images/options-lic.png)
+1. If your option was between 1-3 you will be prompted for license selection. (In this instance I will be going over a Add and Remove) 
+2. Select the licenses that you would like to add to the accounts. 
 ![Licenses-add](../../ref/images/add-licenses.png)
 8. Select the license/s that you would like to remove from the accounts.|
 ![Licenses-remove](../../ref/images/remove-licenses.png)

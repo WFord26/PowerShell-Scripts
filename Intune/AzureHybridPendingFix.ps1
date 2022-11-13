@@ -11,16 +11,15 @@
    - Modifies text in array
    - Writes Keys that are backed up to host
    - Removes Keys that are needed/can't be deleted
-   - Writes to host keys that are being deleted
-   - Deletes keys from registry
+   - Checks if any keys are to be deleted then, deletes keys from registry
    - Reboots Computer
    
 .NOTES
   Name: UpdateLicense
   Author: W. Ford
-  Version: 1.0
+  Version: 1.1
   DateCreated: Nov 2022
-  Purpose/Change: Initial Script
+  Purpose/Change: updated registry keys to be kept, added check on Array
 #>
 
 #Force Azure AD Device Logout
@@ -28,8 +27,15 @@ dsregcmd /leave
 
 #Backup Directory
 $dir="C:\temp\IntuneCleanUp"
-md $dir\AADbackup
 $date=Get-Date -Format "MM-dd-yyyy.HH.mm"
+
+#Checks if directory exists then creates it.
+if (Test-Path $outDIR){
+  Write-Host "Folder Exist"
+  Write-Host $outDIR
+} else {
+  md $dir\AADbackup
+}
 
 #Copies all AAD.broker token folders to file location then removes them
 Get-ItemProperty -Path "C:\Users\*\AppData\Local\Packages" | ForEach-Object {
@@ -51,19 +57,19 @@ Write-Host "Current Keys in Folder"
 Write-Host $regArray
 
 #Removes registry keys from array list that shouldn't be deleted
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\Context")
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\Status")
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\ValidNodePaths")
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\Ownership")
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\PollOnLoginTasksCreated")
 $regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\5281DB7A-989E-4CB9-A16F-6194722E17A8")
 $regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\84741AD0-B358-49A9-83F8-F7E20AE12B3A")
 
+#Checks if $regArray is null
 
-foreach ($reg in $regArray)
-{
-  Write-Host "Deleting $reg"
-  reg delete $reg /f
+if ($regArray){
+  foreach ($reg in $regArray)
+    {
+      Write-Host "Deleting $reg"
+      reg delete $reg /f
+    }
+} else {
+  Write-Host "No Registry keys to delete."
 }
 
 #Reboots the computer

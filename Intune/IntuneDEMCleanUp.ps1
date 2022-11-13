@@ -20,9 +20,9 @@
 .NOTES
   Name: UpdateLicense
   Author: W. Ford
-  Version: 1.0
+  Version: 1.1
   DateCreated: Nov 2022
-  Purpose/Change: Initial Script
+  Purpose/Change: Updated registry edit
 #>
 
 #Force Azure AD Device Logout
@@ -53,13 +53,6 @@ Write-Host "Keys backed up to folder"
 Write-Host $regArray
 
 #Removes registry keys from array list that shouldn't be deleted
-#
-#I have commented these out as they get rebuilt once the computer re-registers.
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\Context")
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\Status")
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\ValidNodePaths")
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\Ownership")
-#$regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\PollOnLoginTasksCreated")
 $regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\5281DB7A-989E-4CB9-A16F-6194722E17A8")
 $regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\84741AD0-B358-49A9-83F8-F7E20AE12B3A")
 
@@ -68,10 +61,14 @@ $regArray.Remove("HKLM\SOFTWARE\Microsoft\Enrollments\84741AD0-B358-49A9-83F8-F7
 Write-Host "Keys to be deleted"
 Write-Host $regArray
 
-foreach ($reg in $regArray)
-{
-  Write-Host "Deleting $reg"
-  reg delete $reg /f
+if ($regArray){
+  foreach ($reg in $regArray)
+    {
+      Write-Host "Deleting $reg"
+      reg delete $reg /f
+    }
+} else {
+  Write-Host "No Registry keys to delete."
 }
 
 #Installs Company Portal app from Windows store on the computer.

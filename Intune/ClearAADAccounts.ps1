@@ -15,18 +15,9 @@
 #>
 
 #Backup Directory
-$dir="C:\temp\IntuneCleanUp"
-
-#Checks if directory exists then creates it.
-if (Test-Path $dir){
-  Write-Host "Folder Exist"
-  Write-Host $dir
-} else {
-  md $dir
-}
+$dirAAD="C:\temp\IntuneCleanUp\AADbackup"
 
 #Checks if directory exists then creates it
-$dirAAD = $dir\AADbackup
 if (Test-Path $dirAAD){
   Write-Host "Folder Exist"
   Write-Host $dirAAD
@@ -36,8 +27,8 @@ if (Test-Path $dirAAD){
 
 #Copies all AAD.broker token folders to file location then removes them
 Get-ItemProperty -Path "C:\Users\*\AppData\Local\Packages" | ForEach-Object {
-Copy-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Destination $dirAAD -Recurse -Force | Out-Null
-Remove-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Recurse -Force | Out-Null
+  Copy-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Destination $dirAAD -Recurse -Force | Out-Null
+  Remove-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Recurse -Force | Out-Null
 }
 
 #Reboots the computer

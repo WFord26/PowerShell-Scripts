@@ -16,7 +16,7 @@
   DateCreated: nov 2022
   Change: Added parameter, added if statement for file creation 
 .EXAMPLE
-  .\Get-MailboxRules.ps1 -userFile C:\script\
+  .\Get-MailboxRules.ps1 -outDIR C:\script\
 
 #>
 

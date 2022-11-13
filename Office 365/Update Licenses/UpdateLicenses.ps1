@@ -12,9 +12,9 @@
   DateCreated: jul 2022
   Purpose/Change: Assist Cloud team with License Replacement
 .EXAMPLE
-  .\UpdateLicenses.ps1 -userFile 'C:\Users\Will Work\termination.txt'
+  .\UpdateLicenses.ps1 -userFile 'C:\scripts\termination.txt'
 
-  Update licenses from users in file located at 'C:\Users\Will Work\termination.txt'
+  Update licenses from users in file located at 'C:\scripts\termination.txt'
 
 #>
 param(

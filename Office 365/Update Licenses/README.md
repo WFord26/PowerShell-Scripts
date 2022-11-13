@@ -6,11 +6,9 @@ Use this script to bulk Add, Remove, Swap licenses.
 
 1. Using the users.txt file that comes with the script create a list of all of the UPN's of the users that you would like to update. Save this file to your computer and copy the full file path i.e. (C:\Users\test\users.txt)
 
-    >test1@contoso.com
-    >
-    >test2@contoso.com
-    >
-    >test3@contoso.com
+    >test1@contoso.com<br/>
+    >test2@contoso.com<br/>
+    >test3@contoso.com<br/>
 2. Launch PowerShell as adminstrator
 3. Connect to MSOnline with a General Admin account for the tenant you wish to manage.
 4. Run the following command to get a list of all licenses available in the tenant.

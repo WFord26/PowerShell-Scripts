@@ -22,29 +22,32 @@
   Purpose/Change: updated registry keys to be kept, added check on Array
 #>
 
-#Force Azure AD Device Logout
-dsregcmd /leave
-
 #Backup Directory
-$dir="C:\temp\IntuneCleanUp"
 $date=Get-Date -Format "MM-dd-yyyy.HH.mm"
+$outDIR="C:\temp\IntuneCleanUp"
+$dsregcmdFile=$outDIR\dsregcmd.$date.txt
 
 #Checks if directory exists then creates it.
 if (Test-Path $outDIR){
   Write-Host "Folder Exist"
   Write-Host $outDIR
 } else {
-  md $dir\AADbackup
+  md $outDIR\AADbackup.$date
 }
+
+#Export copy of current dsregcmd /status
+dsregcmd /status >> $dsregcmdFile
+#Force Azure AD Device Logout
+dsregcmd /leave
 
 #Copies all AAD.broker token folders to file location then removes them
 Get-ItemProperty -Path "C:\Users\*\AppData\Local\Packages" | ForEach-Object {
-  Copy-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Destination $dir\AADbackup -Recurse -Force | Out-Null
+  Copy-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Destination $outDIR\AADbackup.$date -Recurse -Force | Out-Null
   Remove-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Recurse -Force | Out-Null
   }
 
 #Backs up Enrollments Registry keys
-reg export HKLM\Software\Microsoft\Enrollments $dir\Enrollments.$date.reg
+reg export HKLM\Software\Microsoft\Enrollments $outDIR\Enrollments.$date.reg
 
 #Stores registry query for Enrollments in array list
 [System.Collections.ArrayList]$regArray= reg query HKLM\SOFTWARE\Microsoft\Enrollments

@@ -1,27 +1,26 @@
 <#
 .Synopsis
-  Prepares a inuse device for fixes issues with Azure Hybrid Joined Device stuck in Pending
+  Run this when device fails to join Intune and you are getting errors 201: unauthorized.
 
 .DESCRIPTION
   This script will do the following:
-   - Leaves Azure AD
    - Creates backup directory
-   - Copies all AAD auth tokens and deletes them
+   - Gets current Azure AD status saves in file
+   - Leaves Azure AD
    - Stores Enrollments keys in a list array
    - Modifies text in array
    - Writes Keys that are backed up to host
    - Removes Keys that are needed/can't be deleted
    - Checks if any keys are to be deleted then, deletes keys from registry
-   - Reboots Computer
+   - Runs GPUpdate
    
 .NOTES
-  Name: AzureHybridPendingFix.ps1
+  Name: IntuneFailToRegister.ps1
   Author: W. Ford
-  Version: 1.1
+  Version: 1.0
   DateCreated: Nov 2022
-  Purpose/Change: updated registry keys to be kept, added check on Array
+  Purpose/Change: Initial script
 #>
-
 #Backup Directory
 $date=Get-Date -Format "MM-dd-yyyy.HH.mm"
 $outDIR="C:\temp\IntuneCleanUp"
@@ -40,15 +39,6 @@ if (Test-Path $outDIR){
 dsregcmd /status >> $dsregcmdFile
 #Force Azure AD Device Logout
 dsregcmd /leave
-
-#Copies all AAD.broker token folders to file location then removes them
-Get-ItemProperty -Path "C:\Users\*\AppData\Local\Packages" | ForEach-Object {
-  Copy-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Destination $outDIR\AADbackup.$date -Recurse -Force | Out-Null
-  Remove-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Recurse -Force | Out-Null
-  }
-
-#Backs up Enrollments Registry keys
-reg export HKLM\Software\Microsoft\Enrollments $outDIR\Enrollments.$date.reg
 
 #Stores registry query for Enrollments in array list
 [System.Collections.ArrayList]$regArray= reg query HKLM\SOFTWARE\Microsoft\Enrollments
@@ -75,7 +65,4 @@ if ($regArray){
 } else {
   Write-Host "No Registry keys to delete."
 }
-
-gpupdate
-#Reboots the computer
-Restart-Computer -Force
+gpupdate /force

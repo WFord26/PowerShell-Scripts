@@ -10,7 +10,7 @@ Use the [AzureHybridPendingFix.ps1](https://raw.githubusercontent.com/WFord26/Po
 
 ## Intune device will not register
 
-Use the [ClearAADAccounts.ps1](https://raw.githubusercontent.com/WFord26/PowerShell-Scripts/main/Intune/ClearAADAccounts.ps1?token=GHSAT0AAAAAAB3BC743P7SGLO7TTHGMQOAGY3OPVDQ) script when devices are registered to Azure AD but are not coming into Intune. This can occur when the device has been registered under MAM policies and the Azure AAD tokens are still stored on the computer.  This PowerShell script deletes all AAD tokens from the device and reboots. This should allow the scheduled task that enrolls device in Intune to run.
+Use the [ClearAADAccounts.ps1](https://raw.githubusercontent.com/WFord26/PowerShell-Scripts/main/Intune/ClearAADAccounts.ps1?token=GHSAT0AAAAAAB3BC743P7SGLO7TTHGMQOAGY3OPVDQ) script when devices are registered to Azure AD but are not coming into Intune. This can occur when the device has been registered under MAM policies and the Azure AAD tokens are still stored on the computer.  This PowerShell script deletes all AAD tokens from the device and reboots. This should allow the scheduled task that enrolls device in Intune to run. This will require users to re-enter their passwords for their Microsoft Apps to register again. 
 
 ## Devices that need to be brought into Intune with a Device Enrollment Manager (DEM) Account
 

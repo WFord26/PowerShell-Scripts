@@ -25,7 +25,7 @@ This can be caused by a multitude of things. The best bet is to check on the aff
     > gpupdate /force
 
     on the device that is having issues to pull the new Group Policies and to delete the auto-enrollment process on login.
-3. On the device run the script IntuneError76.ps1 on the device. 
+3. On the device run the script [IntuneError76.ps1](https://raw.githubusercontent.com/WFord26/PowerShell-Scripts/main/Intune/IntuneError76.ps1) on the device. 
 4. While the device reboots. Move the device back in to the Azure AD synced OU and run a delta sync on the Azure AD sync.
 5. Login to the computer as a user that has both a Azure AD premium license and Intune license as well. Run the command to sync Group policies.
      > gpupdate /force

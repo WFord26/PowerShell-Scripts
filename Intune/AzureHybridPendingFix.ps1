@@ -1,6 +1,6 @@
 <#
 .Synopsis
-  Prepares a inuse device for fixes issues with Azure Hybrid Joined Device stuck in Pending
+  Fixes issues with Azure Hybrid Joined Device stuck in Pending
 
 .DESCRIPTION
   This script will do the following:
@@ -76,6 +76,5 @@ if ($regArray){
   Write-Host "No Registry keys to delete."
 }
 
-gpupdate
 #Reboots the computer
 Restart-Computer -Force

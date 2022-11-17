@@ -1,6 +1,6 @@
 <#
 .Synopsis
-  Prepares a inuse device for Azure AD Joining and enrollment in Intune with a DEM account
+  Prepares a device for Azure AD Joining and enrollment in Intune with a DEM account
 
 .DESCRIPTION
   This script will do the following:
@@ -18,24 +18,28 @@
    - Reboots Computer
    
 .NOTES
-  Name: UpdateLicense
+  Name: IntuneDEMCleanUp
   Author: W. Ford
   Version: 1.1
   DateCreated: Nov 2022
   Purpose/Change: Updated registry edit
 #>
 
-#Force Azure AD Device Logout
-dsregcmd /leave
-
 #Backup Directory
 $dir="C:\temp\IntuneCleanUp"
-md $dir\AADbackup
-$date=Get-Date -Format "MM-dd-yyyy.HH.mm"
+$dirAAD="C:\temp\IntuneCleanUp\AADbackup"
+
+#Checks if directory exists then creates it
+if (Test-Path $dirAAD){
+  Write-Host "Folder Exist"
+  Write-Host $dirAAD
+} else {
+  md $dirAAD
+}
 
 #Copies all AAD.broker token folders to file location then removes them
 Get-ItemProperty -Path "C:\Users\*\AppData\Local\Packages" | ForEach-Object {
-Copy-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Destination $dir\AADbackup -Recurse -Force | Out-Null
+Copy-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Destination $dirAAD -Recurse -Force | Out-Null
 Remove-Item -Path "$_\Microsoft.AAD.BrokerPlugin*" -Recurse -Force | Out-Null
 }
 

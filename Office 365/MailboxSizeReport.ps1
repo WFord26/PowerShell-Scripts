@@ -182,7 +182,7 @@ Function Get-MailboxStats {
     
         [pscustomobject]@{
           "Display Name" = $_.DisplayName
-          "Email Address" = $_.PrimarySMTPAddress
+          "Email Address" = $_.UserPrincipalName
           "Mailbox Type" = $_.RecipientTypeDetails
           "Last User Action Time" = $mailboxSize.LastUserActionTime
           "Total Size (GB)" = ConvertTo-Gb -size $mailboxSize.TotalItemSize.ToString().Split("(")[0]

@@ -11,6 +11,8 @@
   Version: 1.2
   DateCreated: jul 2022
   Purpose/Change: Assist Cloud team with License Replacement
+
+ 
 .EXAMPLE
   .\UpdateLicenses.ps1 -userFile 'C:\scripts\termination.txt'
 

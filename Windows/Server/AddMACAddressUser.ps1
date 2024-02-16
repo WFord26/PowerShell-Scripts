@@ -15,9 +15,9 @@
 .NOTES
   Name: AddMACAddressUser
   Author: W. Ford
-  Version: 1.0
+  Version: 2.0
   DateCreated: sep 2023
-  Purpose/Change: Adding Parameters
+  Purpose/Change: Updating to include a ticket number and OU path.
 
 .PARAMETER FilePath
 Enter the file location of your MACs text file, with list of MAC address you wish to add.
@@ -28,8 +28,21 @@ Enter in your local Active Directory domain, like "@contoso.com" or "@contoso.lo
 .PARAMETER TicketNumber
 Enter in your local Active Directory domain, like "@contoso.com" or "@contoso.local"
 
+.PARAMETER OUPath
+Enter in the path to your OU. Default is Terminals,DC=Contoso,DC=local
+
+.PARAMETER DC
+Enter in the Domain Controller you wish to use
+
 .EXAMPLE
-  .\AddMACAddressUser.ps1 -FilePath "C:\Temp\MACs.csv" -Domain "@Contoso.local"
+  AddMACAddressUser -FilePath "C:\Temp\MACs.csv" -Domain "@Contoso.local"
+  This will run the script with the default OU and DC.
+  AddMACAddressUser -FilePath "C:\Temp\MACs.csv" -Domain "@Contoso.local" -TicketNumber "123456" -OUPath "OU=Terminals,DC=Contoso,DC=local" -DC "DC01"
+  This will run the script with the default OU and DC.
+
+  TRANSFORMS
+  1.0 - Initial Script
+  2.0 - Added Ticket Number and OU Path
 
 #>
 function AddMACAddressUser {
@@ -51,7 +64,17 @@ param(
     Mandatory = $true,
     HelpMessage = "Enter in a corresponding ticket number for this request"
   )]
-  [string]$TicketNumber
+  [string]$TicketNumber,
+  [Parameter(
+    Mandatory = $false,
+    HelpMessage = "Enter in the path to your OU. Default is Terminals,DC=Contoso,DC=local"  
+  )]
+  [string]$OUPath = "OU=Terminals,DC=Contoso,DC=local",
+  [Parameter(
+    Mandatory = $true,
+    HelpMessage = "Enter in the Domain Controller you wish to use"  
+  )]
+  [string]$DC = "DC01"
 )
 function Toggle-ADPasswordPolicy {
   param(
@@ -78,7 +101,7 @@ function Toggle-ADPasswordPolicy {
 $todaysDate = Get-Date
 
 ## Disable Password Policy
-Toggle-ADPasswordPolicy -DomainController "DC1" -Enable $false
+Toggle-ADPasswordPolicy -DomainController $DC -Enable $false
 
 Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
     $MACAddressString = $_.mac.ToString()
@@ -95,7 +118,7 @@ Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
                 Surname = "Terminal"
                 AccountPassword = $SecurePass
                 Enabled = $true
-                Path ="OU=Terminals,DC=mtnmanit,DC=local"
+                Path = $OUPath
                 UserPrincipalName = $MACAddress+$Domain
                 PasswordNeverExpires = $true
                 AllowReversiblePasswordEncryption  =$true
@@ -112,6 +135,7 @@ Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
             get-aduser $MACAddress | set-aduser -replace @{primaryGroupID=$group.primaryGroupToken}
             # Removes device from Domain Users group.
             remove-adgroupmember -Identity "Domain Users" -Member $MACAddress
+            Write-Host "User $MACAddress created in AD" -ForegroundColor green
             
         } else {
             Write-Host "User $MACAddress exists in AD" -ForegroundColor red
@@ -120,8 +144,10 @@ Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
 
     }
 ## Enable Password Policy
-Toggle-ADPasswordPolicy -DomainController "DC1" -Enable $true
+Toggle-ADPasswordPolicy -DomainController $DC -Enable $true
   }
 
 # Example Usage
-AddMACAddressUser -FilePath "C:\Temp\MACs.csv" -Domain "@Contoso.local" -TicketNumber "12345"
+
+AddMACAddressUser -FilePath "C:\Temp\MACs.csv" -Domain "@Contoso.local" -TicketNumber "123456" -OUPath "OU=Terminals,DC=Contoso,DC=local" -DC "DC01"
+

@@ -32,7 +32,8 @@ Enter in your local Active Directory domain, like "@contoso.com" or "@contoso.lo
   .\AddMACAddressUser.ps1 -FilePath "C:\Temp\MACs.csv" -Domain "@Contoso.local"
 
 #>
-
+function AddMACAddressUser {
+  [CmdletBinding()]
 param(
   [Parameter(
     Mandatory = $false,
@@ -41,10 +42,10 @@ param(
   [string]$FilePath = "C:\Temp\MACs.txt",
   
   [Parameter(
-    Mandatory = $false,
+    Mandatory = $true,
     HelpMessage = "Enter in your Active Directory Domain"
   )]
-  [string]$Domain = "@mtnmanit.local",
+  [string]$Domain = "@Contoso.local",
 
    [Parameter(
     Mandatory = $true,
@@ -52,8 +53,32 @@ param(
   )]
   [string]$TicketNumber
 )
+function Toggle-ADPasswordPolicy {
+  param(
+      [Parameter(Mandatory=$true)]
+      [string]$DomainController,
+      [Parameter(Mandatory=$true)]
+      [bool]$Enable
+  )
 
+  # Import the Active Directory module
+  Import-Module ActiveDirectory
+
+  # Get the current domain
+  $domain = Get-ADDomain -Server $DomainController
+
+  if ($Enable) {
+      # Enable password policy
+      Set-ADDefaultDomainPasswordPolicy -Identity $domain.DistinguishedName -ComplexityEnabled $true 
+  } else {
+      # Disable password policy
+      Set-ADDefaultDomainPasswordPolicy -Identity $domain.DistinguishedName -ComplexityEnabled $false 
+  }
+}
 $todaysDate = Get-Date
+
+## Disable Password Policy
+Toggle-ADPasswordPolicy -DomainController "DC1" -Enable $false
 
 Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
     $MACAddressString = $_.mac.ToString()
@@ -94,3 +119,9 @@ Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
         }
 
     }
+## Enable Password Policy
+Toggle-ADPasswordPolicy -DomainController "DC1" -Enable $true
+  }
+
+# Example Usage
+AddMACAddressUser -FilePath "C:\Temp\MACs.csv" -Domain "@Contoso.local" -TicketNumber "12345"

@@ -42,20 +42,10 @@ This also tests basic network functionality too.
 Where would you like the Log file to save to?
 
 .EXAMPLE
-  .\NetworkTest.ps1 -siteName "My Site Name" -output "C:\temp"
-    - This saves a file to "C:\temp\NetworkTest\My Site Name\LogFile-<Todays Date>.md"
-    - Will run the Network and HTTP tests for the default settings for both.
-        - 1.1.1.1, 8.8.8.8
-
-  .\NetworkTest.ps1 -ipList "1.1.1.1,192.168.0.1,google.com" -httpList "facebook.com" -shareList "\\Server\share,\\Server2\share2" -networkTest all
-    - This will run all network tests
-    - It will do network tests to:
-        - 1.1.1.1, 192.168.0.1, google.com
-    - It will do a http test to facebook.com
-    - It will do a network share test to:
-        - \\Server\share, \\Server2\share2
-
+    .\NetworkTest.ps1 -siteName "My Site Name" -output "C:\temp" -networkTest all
+    This will run all tests and save the log file to the C:\temp directory.  
 #>
+function networkTest {
 param(
   [Parameter(
     Mandatory = $false,
@@ -139,7 +129,7 @@ Function ConvertTo-Markdown {
         if ($data) {
             #convert data to strings and trim each line
             Write-Verbose "[END    ] Converting data to strings"
-            [string]$trimmed = (($data | Out-String -Width $width).split("`n")).ForEach( {"$($_.trimend())`n"})
+            [string]$trimmed = (($data | Out-String -Width $width).Split("`n")).ForEach( {"$($_.trimend())`n"})
             Write-Verbose "[END    ] Adding to markdown"
             $text += @"
 ``````text
@@ -400,9 +390,9 @@ $ProgressPreference = "SilentlyContinue"
 
 if ($networkTest -eq "All"){
     # Run all Tests
-    $script:ipList = $ipList.split(',')
-    $script:httpList = $httpList.split(',')
-    $script:shareList = $shareList.split(',')
+    $script:ipList = $ipList.Split(',')
+    $script:httpList = $httpList.Split(',')
+    $script:shareList = $shareList.Split(',')
     CreateLog
     IPTest
     HTTPTest
@@ -411,7 +401,7 @@ if ($networkTest -eq "All"){
     OutputResults
 } elseif ($networkTest -eq "ip"){
     # Run only IP/Network Test
-    $script:ipList = $ipList.split(',')
+    $script:ipList = $ipList.Split(',')
     $script:httpList = $httpList.Split(',')
     $script:shareList = $shareList.Split(',')
     CreateLog
@@ -420,22 +410,22 @@ if ($networkTest -eq "All"){
     OutputResults
 }elseif ($networkTest -eq "http"){
     # HTTP Tests
-    $script:httpList = $httpList.split(',')
+    $script:httpList = $httpList.Split(',')
     CreateLog
     HTTPTest
     CombineTables
     OutputResults
 } elseif ($networkTest -eq "share"){
     # Network Share Tests
-    $script:shareList = $shareList.split(',')
+    $script:shareList = $shareList.Split(',')
     CreateLog
     ShareTest
     CombineTables
     OutputResults
 } elseif ($networkTest -eq "httpScan"){
     # HTTP and IP tests
-    $script:ipList = $ipList.split(',')
-    $script:httpList = $httpList.split(',')
+    $script:ipList = $ipList.Split(',')
+    $script:httpList = $httpList.Split(',')
     CreateLog
     IPTest
     HTTPTest
@@ -445,4 +435,8 @@ if ($networkTest -eq "All"){
     Write-Host "Incorrect selection for type of test."
 }
 
-$ProgressPreference = $OriginalPref
+$ProgressPreference = $OriginalPref # Reset ProgressPreference to original setting
+
+}
+# Run the function
+networkTest -siteName "My Site Name" -output "C:\temp" -networkTest all

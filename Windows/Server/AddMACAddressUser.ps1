@@ -15,7 +15,7 @@
 .NOTES
   Name: AddMACAddressUser
   Author: W. Ford
-  Version: 2.0
+  Version: 2.1
   DateCreated: sep 2023
   Purpose/Change: Updating to include a ticket number and OU path.
 
@@ -43,6 +43,7 @@ Enter in the Domain Controller you wish to use
   TRANSFORMS
   1.0 - Initial Script
   2.0 - Added Ticket Number and OU Path
+  2.1 - Added Password Policy Disable/Enable
 
 #>
 function AddMACAddressUser {
@@ -76,7 +77,7 @@ param(
   )]
   [string]$DC = "DC01"
 )
-function Toggle-ADPasswordPolicy {
+function Update-ADPasswordPolicy {
   param(
       [Parameter(Mandatory=$true)]
       [string]$DomainController,
@@ -101,7 +102,7 @@ function Toggle-ADPasswordPolicy {
 $todaysDate = Get-Date
 
 ## Disable Password Policy
-Toggle-ADPasswordPolicy -DomainController $DC -Enable $false
+Update-ADPasswordPolicy-ADPasswordPolicy -DomainController $DC -Enable $false
 
 Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
     $MACAddressString = $_.mac.ToString()
@@ -115,7 +116,7 @@ Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
             $splat = @{
                 name = $MACAddress
                 samAccount = $MACAddress
-                Surname = "Terminal"
+                Surname = "MAC"
                 AccountPassword = $SecurePass
                 Enabled = $true
                 Path = $OUPath
@@ -144,7 +145,7 @@ Import-Csv $FilePath -Encoding UTF8 | Foreach-Object {
 
     }
 ## Enable Password Policy
-Toggle-ADPasswordPolicy -DomainController $DC -Enable $true
+Update-ADPasswordPolicy -DomainController $DC -Enable $true
   }
 
 # Example Usage

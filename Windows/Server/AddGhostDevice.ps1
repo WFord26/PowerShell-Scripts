@@ -1,3 +1,23 @@
+<#
+    .SYNOPSIS
+    This script is used to add a ghost device to Active Directory.
+    
+    .DESCRIPTION
+    This script will doing the following:
+    1. Add a new computer object to Active Directory
+    2. Add the computer object to a specified group
+    3. Remove the computer object from the default "Domain Computers" group
+    4. Add the computer object to any groups it is a member of in Azure AD
+    5. Remove the computer object from any groups it is no longer a member of in Azure AD
+    6. Remove any computer objects from Active Directory that no longer exist in Azure AD
+    7. Remove any group objects from Active Directory that no longer exist in Azure AD
+    8. Revoke any certificates associated with the computer object when it is removed from Active Directory (optional)
+
+    
+    
+
+#>
+
 # Azure AD Device Sync to Active Directory
 # Written by Keith Ng <me@keithng.com.au>, April 2023
 #

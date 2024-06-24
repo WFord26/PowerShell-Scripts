@@ -19,7 +19,7 @@
   Author: W. Ford
   Version: 1.1
   DateCreated: Nov 2022
-  Purpose/Change: updated registry keys to be kept, added check on Array
+  Purpose/Change: updated registry keys to be kept, added check on Array list to see if it's null or not.
 #>
 
 #Backup Directory
@@ -33,7 +33,7 @@ if (Test-Path $outDIR){
   Write-Host "Folder Exist"
   Write-Host $outDIR
 } else {
-  md $outDIR\AADbackup.$date
+  mkdir $outDIR\AADbackup.$date
 }
 
 #Export copy of current dsregcmd /status

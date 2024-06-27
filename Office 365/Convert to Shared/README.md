@@ -9,8 +9,8 @@ Use this script to convert all users found within a text file. This script requi
 .\ConvertToShared.ps1 -adminUPN admin@contoso.com -fileDIR .\UsersToShared.txt
 ```
 This example will convert all mailboxes listed in UsersToShared.txt to shared mailboxes.
-- To login as johndoe@contoso.com
-- To use the default file in folder **UsersToShared.txt** 
+- To log in as johndoe@contoso.com
+- To use the default file in the folder **UsersToShared.txt** 
 
 
 **How do I choose my own file location?**

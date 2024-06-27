@@ -134,7 +134,6 @@ if ((Get-Item $path).Length -gt 0) {
   Write-Host "Failed to create report" -ForegroundColor Red
 }
 
-
 # Close Exchange Online Connection
 $close = Read-Host Close PNP Online connection? [Y] Yes [N] No 
 

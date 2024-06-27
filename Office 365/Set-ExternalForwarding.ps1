@@ -25,7 +25,7 @@ param (
     [Parameter(Mandatory=$true)]
     [string]$csvPath
 )
-Function ConnectTo-EXO {
+Function Connect-EXO {
     <#
       .SYNOPSIS
           Connects to EXO when no connection exists. Checks for EXO v2 module
@@ -33,7 +33,7 @@ Function ConnectTo-EXO {
     
     process {
       # Check if EXO is installed and connect if no connection exists
-      if ((Get-Module -ListAvailable -Name ExchangeOnlineManagement) -eq $null)
+    if ($null -eq (Get-Module -ListAvailable -Name ExchangeOnlineManagement))
       {
         Write-Host "Exchange Online PowerShell v2 module is requied, do you want to install it?" -ForegroundColor Yellow
         
@@ -50,7 +50,7 @@ Function ConnectTo-EXO {
       }
   
   
-      if ((Get-Module -ListAvailable -Name ExchangeOnlineManagement) -ne $null) 
+      if ($null -ne (Get-Module -ListAvailable -Name ExchangeOnlineManagement)) 
       {
           # Check if there is a active EXO sessions
           $psSessions = Get-PSSession | Select-Object -Property State, Name
@@ -95,22 +95,22 @@ Function Set-ExternalSMTPForwarding{
     }
     # Count Errors
     $errorCount = $errorTrack.Count
+    # Check for errors
+    if ($errorCount -gt 0) {
+        # Log errors to a file
+        $errorLogPath = "$PSScriptRoot\ForwardingErrors.txt"
+        Write-Host "Errors occurred setting forwarding for $errorCount out of $rowCount users:" -ForegroundColor Red
+        Write-Host "Check the error log at $errorLogPath" -ForegroundColor Red
+    }
+    else {
+        # No errors
+        Write-Host "All forwardings set successfully" -ForegroundColor Green
+    }
 }
 
 # Connect to Exchange Online
-ConnectTo-EXO
+Connect-EXO
 
 # Set External Forwarding
 Set-ExternalSMTPForwarding
 
-# Check for errors
-if ($errorCount -gt 0) {
-    # Log errors to a file
-    $errorLogPath = "$PSScriptRoot\ForwardingErrors.txt"
-    Write-Host "Errors occurred setting forwarding for $errorCount users:" -ForegroundColor Red
-    Write-Host "Check the error log at $errorLogPath" -ForegroundColor Red
-}
-else {
-    # No errors
-    Write-Host "All forwardings set successfully" -ForegroundColor Green
-}

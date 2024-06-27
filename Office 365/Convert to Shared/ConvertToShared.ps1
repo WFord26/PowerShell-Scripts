@@ -20,10 +20,11 @@
   This example will convert all mailboxes listed in UsersToShared.txt to shared mailboxes.
 
 .NOTES
-  Version:        1.0
-  Author:         w ford
+  Version:        1.5
+  Author:         William Ford (@WFord26)
   Creation Date:  nov 2022
-  Purpose/Change: Initial Script
+  Date Updated:   6/26/2024
+  Purpose/Change: Updating functions and adding more error handling
 #>
 param(
   [Parameter(

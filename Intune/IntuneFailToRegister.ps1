@@ -21,6 +21,7 @@
   DateCreated: Nov 2022
   Purpose/Change: Initial script
 #>
+
 #Backup Directory
 $date=Get-Date -Format "MM-dd-yyyy.HH.mm"
 $outDIR="C:\temp\IntuneCleanUp"

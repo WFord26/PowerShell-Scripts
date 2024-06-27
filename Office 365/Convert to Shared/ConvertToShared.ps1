@@ -14,10 +14,10 @@
   - Ask if you want to log out of Exchange Online
 
 
-EXAMPLE
-  Get-MailboxSizeReport.ps1 -adminUPN johndoe@contoso.com -fileDIR c:\temp\users.txt
-
-  To use file in the path: c:\temp\users.txt
+.EXAMPLE
+  .\ConvertToShared.ps1 -adminUPN admin@contoso.com -fileDIR .\UsersToShared.txt
+  
+  This example will convert all mailboxes listed in UsersToShared.txt to shared mailboxes.
 
 .NOTES
   Version:        1.0
@@ -39,7 +39,7 @@ param(
   [string]$fileDIR = ".\UsersToShared.txt"
 )
 [System.Collections.ArrayList]$failedUPN = ""
-Function ConnectTo-EXO {
+Function Connect-EXO {
     <#
       .SYNOPSIS
           Connects to EXO when no connection exists. Checks for EXO v2 module
@@ -47,7 +47,7 @@ Function ConnectTo-EXO {
     
     process {
       # Check if EXO is installed and connect if no connection exists
-      if ((Get-Module -ListAvailable -Name ExchangeOnlineManagement) -eq $null)
+      if ($null -eq (Get-Module -ListAvailable -Name ExchangeOnlineManagement))
       {
         Write-Host "Exchange Online PowerShell v2 module is requied, do you want to install it?" -ForegroundColor Yellow
         
@@ -64,7 +64,7 @@ Function ConnectTo-EXO {
       }
   
   
-      if ((Get-Module -ListAvailable -Name ExchangeOnlineManagement) -ne $null) 
+      if ($null -ne (Get-Module -ListAvailable -Name ExchangeOnlineManagement)) 
       {
           # Check if there is a active EXO sessions
           $psSessions = Get-PSSession | Select-Object -Property State, Name
@@ -77,24 +77,53 @@ Function ConnectTo-EXO {
       }
     }
   }
+Function CloseConnection {
+    <#
+      .SYNOPSIS
+          Closes all Exchange Online sessions
+    #>
+    
+    process {
+      # Check if there is a active EXO sessions
+      $psSessions = Get-PSSession | Select-Object -Property State, Name
+      If (((@($psSessions) -like '@{State=Opened; Name=ExchangeOnlineInternalSession*').Count -gt 0) -ne $true) {
+          Get-PSSession | Remove-PSSession
+      }
+    }
+  }
+function ConvertToShared {
+    <#
+      .SYNOPSIS
+          Converts mailboxes to shared mailboxes
+    #>
+    
+    process {
+      # Check if file exists
+    if (Test-Path $fileDIR) {
+        Write-Host "File Exist"
+    } else {
+        Write-Host "File does not exist, please check path"
+        # ask user for file path, with helper text.
+        while (-not (Test-Path $fileDIR)) {
+            $fileDIR = Read-Host "Enter path to file with UPNs"
+        }
+      }
+      # Import File and convert to shared mailbox
+      Get-Content "$fileDIR" | ForEach-Object {
+        # Check if mailbox exists and convert to shared
+        # If mailbox does not exist, add to failedUPN array
+        Set-Mailbox $_ -Type Shared -ErrorAction SilentlyContinue
+        # Check if mailbox was converted
+        if ($?){
+          Write-Host "$_ was converted to shared mailbox" -ForegroundColor Green
+        } else {
+          Write-Host "$_ failed to convert to shared mailbox" -ForegroundColor Red
+          $failedUPN.Add($_)
+          }    
+      }
+    }
+}
 #Connects to ExchangeOnline
-ConnectTo-EXO
-Get-Content "$fileDIR" | ForEach-Object {
-    Set-Mailbox $_ -Type Shared -ErrorAction SilentlyContinue; $failedUPN.Add($_)
-}
-if($notMailboxes){
-    Write-Host -ForegroundColor Red "Following UPNs are not Mailboxes"
-    Write-Host -ForegroundColor Red $failedUPN
-} else {
-    Write-Host -InformationAction "All mailboxes covert successfully."
-}
-Pause
-# Close Exchange Online Connection
-$close = Read-Host Close Exchange Online connection? [Y] Yes [N] No 
-
-if ($close -match "[yY]") {
-  Disconnect-ExchangeOnline -Confirm:$false | Out-Null
-}
-
-#Clean UP Session
-Get-PSSession | Remove-PSSession
+Connect-EXO
+ConvertToShared
+CloseConnection

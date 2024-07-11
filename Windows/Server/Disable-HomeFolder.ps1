@@ -49,31 +49,31 @@ Function Disable-HomeFolder {
         if (-not (Get-Module -Name ActiveDirectory)) {
             Import-Module ActiveDirectory
         }
+        # Check if the errorLog switch is enabled
         if ($errorLog) {
             Write-Host "Error logging is enabled"
             # Default location for the error log file
             $errorLogPath = ".\error.log"
-        } 
-    }
-    # Conditional Parameter
-    if ($errorLog) {
-        # Location for the error log file
-        $errorLogPath = "C:\Users\user\Documents\error.log"
-        # Create error file if it doesn't exist
-        if (-not (Test-Path -Path $errorLogPath)) {
-            New-Item -Path $errorLogPath -ItemType File
-        } else {
-            # Clear the error log file if it exists
-            Clear-Content -Path $errorLogPath
+            # Create error file if it doesn't exist
+            if (-not (Test-Path -Path $errorLogPath)) {
+                New-Item -Path $errorLogPath -ItemType File
+            } else {
+                # Clear the error log file if it exists
+                Clear-Content -Path $errorLogPath
+            }    
+            $errors = @("NAME,UPN,ERROR")
+            } else {
+               Write-Host "Error logging is disabled"
+            }
         }
-        # create an array to store the errors, with headers NAME, UPN.
-        $errors = @("NAME,UPN,ERROR")
-    } else {
-        Write-Host "Error logging is disabled"
-    }
     process {
         # Import the CSV file
         $users = Import-Csv -Path $userFilePath
+        # Confirm file has a header with UserPrincipalName
+        if ($users[0].PSObject.Properties.Name -notcontains "UserPrincipalName") {
+            Write-Host "CSV file must have a header with UserPrincipalName"
+            break
+        }
         # Loop through each user in the CSV file
         foreach ($user in $users) {
             # Get the user from Active Directory

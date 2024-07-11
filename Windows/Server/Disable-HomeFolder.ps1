@@ -35,8 +35,11 @@
 #>
 Function Disable-HomeFolder {
     param (
+        [Parameter(Mandatory = $true), ValueFromPipeline = $true, Position = 0, HelpMessage = "Please provide the path to the CSV file containing the users."]
         [string]$userFilePath,
+        [Parameter(Mandatory = $false), Position = 1, HelpMessage = "Please provide the name of the Security Group to add the users to."]
         [string]$securityGroup,
+        [Parameter(Mandatory = $false), Position = 2, HelpMessage = "Enable error logging."]
         [switch]$errorLog
     )
     # Conditional Parameter
@@ -52,24 +55,39 @@ Function Disable-HomeFolder {
         # create an array to store the errors, with headers NAME, UPN.
         $errors = @("NAME,UPN,ERROR")
     }
+    # Check if the File exists
+    if (-not (Test-Path -Path $userFilePath)) {
+        Write-Host "File not found: $userFilePath" -ForegroundColor Red
+        end
+    }
+    # Import the CSV file
     $users = Import-Csv -Path $userFilePath
+    # Loop through each user in the CSV file
     foreach ($user in $users) {
+        # Get the user from Active Directory
         $adUser = Get-ADUser -Filter {UserPrincipalName -eq $user.UserPrincipalName} -Properties homeDirectory
+        # If the user is found in Active Directory
         if ($adUser) {
+            # Disable the Home Folder for the user
             Set-ADUser -Identity $adUser -HomeDrive "H:" -HomeDirectory $null
             Write-Host "Home Folder disabled for: $($user.UserPrincipalName)"
+            # Add the user to the Security Group if one is provided
             if ($securityGroup) {
                 Add-ADGroupMember -Identity $securityGroup -Members $adUser
                 Write-Host "User added to Security Group: $($securityGroup)"
             }
+        
         } else {
+            # If the user is not found in Active Directory write a message to the console.
             Write-Host "User not found in AD: $($user.UserPrincipalName)"
+            # Log the error if the errorLog switch is enabled
             if ($errorLog) {
                 $error = @( $user.Name, $user.UserPrincipalName, "USER IS NOT FOUND IN AD" )
                 $errors += $error -join ","
             }
         }
     }
+    # If the errorLog switch is enabled, write the errors to the error log file
     if ($errorLog) {
         $errors | Out-File -FilePath $errorLogPath
         Write-Host "Script is complete, any errors have logged to $errorLogPath"
@@ -77,5 +95,3 @@ Function Disable-HomeFolder {
         Write-Host "Script is complete"
     }
 }
-
-Disable-HomeFolder -userFilePath "C:\Users\user\Documents\users.csv"

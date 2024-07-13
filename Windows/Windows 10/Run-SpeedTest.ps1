@@ -5,26 +5,27 @@
     This script will run a speed test on the computer and submit the results to a Microsoft Form.
     The script will check if the speed test executable exists on the computer. If it does not exist, the script will download the speed test executable and run the speed test.
     The script will then submit the results to a Microsoft Form.
-.PARAMETER serverLocation
+.PARAMETER serverID
     The server location to run the speed test against. Default is 47552.
 .PARAMETER speedTestExe
     The path to the speed test executable. Default is 'C:\Temp\speedtest\speedtest.exe'.
 .PARAMETER DownloadURL
     The URL to download the speed test executable. Default is "https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip".
 .EXAMPLE
-    Run-SpeedTest.ps1 -serverLocation 47552 -speedTestExe 'C:\Temp\speedtest\speedtest.exe' -DownloadURL "https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip"
+    Run-SpeedTest.ps1 -serverID 47552 -speedTestExe 'C:\Temp\speedtest\speedtest.exe'
     This example will run a speed test on the computer and submit the results to a Microsoft Form.
 .NOTES
     File Name      : Run-SpeedTest.ps1
     Author         : William Ford (@WFord26)
     Date           : 2024-07-12
+    Link           : https://github.com/WFord26/PowerShell-Scripts
     Version        : 1.0
     Change History : 1.0 - Initial version
     Prerequisite   : PowerShell V2
 #>
 
 param (
-    [int]$serverLocation = 47552,
+    [int]$serverID = 47552,
     [string]$speedTestExe = 'C:\Temp\speedtest\speedtest.exe',
     [string]$DownloadURL = "https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip"
 )
@@ -83,12 +84,12 @@ Function formEntry {
 
 Function speedtestcli {
     param (
-        [int]$serverLocation,
+        [int]$serverID,
         [string]$speedTestExe
     )
     process {
         # Speed Test command
-        $speedTestCMD = & $speedTestExe --accept-license -f json -s $serverLocation
+        $speedTestCMD = & $speedTestExe --accept-license -f json -s $serverID
         # Run Speed Test
         $speedTestOutput = ConvertFrom-Json $speedTestCMD
         # Confirm Speed Test output is valid
@@ -105,7 +106,7 @@ Function speedtestcli {
 }
 # Check if Speed Test executable exists on computer.
 if (Test-Path $speedTestExe) {
-    speedtestcli -serverLocation $serverLocation -speedTestExe $speedTestExe
+    speedtestcli -serverID $serverID -speedTestExe $speedTestExe
 } else {
     # Check if 'C:\Temp\speedtest' directory exists
     if (-not (Test-Path 'C:\Temp')) {
@@ -116,8 +117,9 @@ if (Test-Path $speedTestExe) {
     Invoke-WebRequest -Uri $DownloadURL -OutFile 'C:\Temp\speedtest.zip'
     # Extract Speed Test CLI
     Expand-Archive -Path 'C:\Temp\speedtest.zip' -DestinationPath 'C:\Temp\speedtest'
+    Pause 5
     # Run Speed Test
-    speedtestcli -serverLocation $serverLocation -speedTestExe $speedTestExe
+    speedtestcli -serverID $serverID -speedTestExe $speedTestExe
 }
 # Write-Host "Speed Test completed."
-Write-Host "Speed Test completed."
+Write-Host "Speed Test completed." -ForegroundColor Green

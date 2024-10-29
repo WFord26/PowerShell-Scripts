@@ -19,8 +19,9 @@
     Author         : William Ford (@WFord26)
     Date           : 2024-07-12
     Link           : https://github.com/WFord26/PowerShell-Scripts
-    Version        : 1.0
+    Version        : 1.1
     Change History : 1.0 - Initial version
+                   : 1.1 - Added support for submitting results to a Microsoft Form, removed identifying information
     Prerequisite   : PowerShell V2
 #>
 
@@ -52,29 +53,13 @@ Function formEntry {
         "method"="POST"
         "path"="/formapi/api/271cf5e9-b477-4759-a5d6-6d459bb35f3e/users/769fcfc0-5a70-4751-8b2a-4262fe8984ca/forms('6fUcJ3e0WUel1m1Fm7NfPsDPn3ZwWlFHiypCYv6JhMpUNkFQOURKV0owOVJMOTdFM1k3NlhSWFZQVi4u')/responses"
         "scheme"="https"
-        "__requestverificationtoken"="Q1tcBxM0dj8tqsoIdPrc5DMo1Ey9U8c6rf4tsM1lAHIRvLKuduJI78yR_YLK6jZ_yaAptjQvNKIqzbamPQM0Ihn7CPC2w8bLh8k1VRzSfdR6sspUUnxoizenHFAQSsKrUKL8GYiVOxfolrZUHAY3Ew2"
         "accept"="application/json"
         "accept-encoding"="gzip, deflate, br, zstd"
         "accept-language"="en-US,en;q=0.9"
-        "authorization"=""
         "dnt"="1"
         "odata-maxverion"="4.0"
-        "odata-version"="4.0"
         "origin"="https://forms.office.com"
-        "priority"="u=1, i"
         "referer"="https://forms.office.com/Pages/ResponsePage.aspx?id=6fUcJ3e0WUel1m1Fm7NfPsDPn3ZwWlFHiypCYv6JhMpUNkFQOURKV0owOVJMOTdFM1k3NlhSWFZQVi4u"
-        "sec-ch-ua"="`"Not/A)Brand`";v=`"8`", `"Chromium`";v=`"126`", `"Microsoft Edge`";v=`"126`""
-        "sec-ch-ua-mobile"="?0"
-        "sec-ch-ua-platform"="`"Windows`""
-        "sec-fetch-dest"="empty"
-        "sec-fetch-mode"="cors"
-        "sec-fetch-site"="same-origin"
-        "x-correlationid"="421a59d3-c982-4e25-9137-548b4f46e60f"
-        "x-edge-shopping-flag"="1"
-        "x-ms-form-muid"="0B491EFB33F261EE19270AF7329D601C"
-        "x-ms-form-request-ring"="business"
-        "x-ms-form-request-source"="ms-formweb"
-        "x-usersessionid"="17693d06-731d-4269-8244-9afb4d49997a"
         } `
         -ContentType "application/json" `
         -Body "{`"startDate`":`"2024-07-12T23:48:50.024Z`",`"submitDate`":`"2024-07-12T23:49:37.720Z`",`"answers`":`"[{\`"questionId\`":\`"rb53980291c8b493c8ed5fb709e527f71\`",\`"answer1\`":\`"$q1\`"},{\`"questionId\`":\`"rce8f0215991045b8a35d0629e6232bb8\`",\`"answer1\`":\`"$q2\`"},{\`"questionId\`":\`"r63b8f050fc51463cacac2d4d97370227\`",\`"answer1\`":\`"$q3\`"},{\`"questionId\`":\`"r10b49a13a6dd48c18fa2552abd9c66c9\`",\`"answer1\`":\`"$q4\`"},{\`"questionId\`":\`"r1afc4dfe7223435688fb3790f2747856\`",\`"answer1\`":\`"$q5\`"},{\`"questionId\`":\`"rddca130ab5ac4cd99f9872517c3b892f\`",\`"answer1\`":\`"$q6\`"},{\`"questionId\`":\`"rdc5320917f2f42729bb3cdd0d511a362\`",\`"answer1\`":\`"$q7\`"},{\`"questionId\`":\`"r3985db2b6edb4cf39f9ac04f7ee85350\`",\`"answer1\`":\`"$q8\`"}]`"}";

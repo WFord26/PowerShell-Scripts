@@ -77,7 +77,7 @@ Function Disable-HomeFolder {
         # Loop through each user in the CSV file
         foreach ($user in $users) {
             # Get the user from Active Directory
-            $adUser = Get-ADUser -Filter {UserPrincipalName -eq $user.UserPrincipalName} -Properties homeDirectory
+            $adUser = Get-ADUser -Identity $user.UserPrincipalName -Properties homeDirectory
             # If the user is found in Active Directory
             if ($adUser) {
                 # Disable the Home Folder for the user
@@ -94,8 +94,8 @@ Function Disable-HomeFolder {
                 Write-Host "User not found in AD: $($user.UserPrincipalName)"
                 # Log the error if the errorLog switch is enabled
                 if ($errorLog) {
-                    $error = @( $user.Name, $user.UserPrincipalName, "USER IS NOT FOUND IN AD" )
-                    $errors += $error -join ","
+                    $errorLogEntry = @( $user.Name, $user.UserPrincipalName, "USER IS NOT FOUND IN AD" )
+                    $errors += $errorLogEntry -join ","
                 }
             }
         }
@@ -108,4 +108,5 @@ Function Disable-HomeFolder {
         } else {
             Write-Host "Script is complete"
         }
+}
 }

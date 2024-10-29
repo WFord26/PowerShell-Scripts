@@ -26,7 +26,7 @@
 #>
 
 param (
-    [int]$serverID = 47552,
+    [int]$serverID = 62644,
     [string]$speedTestExe = 'C:\Temp\speedtest\speedtest.exe',
     [string]$DownloadURL = "https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip"
 )
@@ -83,28 +83,54 @@ Function speedtestcli {
             exit
         } else {
             $compname = hostname
+            # Convert Bandwidth from bits to megabits
             $downloadSpeed = [math]::Round($speedTestOutput.Download.Bandwidth / 125000, 2)
             $uploadSpeed = [math]::Round($speedTestOutput.Upload.Bandwidth / 125000, 2)
+            # Get Public IP location information from the speed test.
+            $publicIPInfo = Invoke-RestMethod -Uri "https://ipinfo.io/$($speedTestOutput.interface.externalIP)/json"
             formEntry -q1 $uploadSpeed -q2 $downloadSpeed -q3 $speedTestOutput.Ping.Latency -q4 $speedTestOutput.isp -q5 $speedTestOutput.interface.internalIP -q6 $speedTestOutput.interface.externalIP -q7 $speedTestOutput.Server.id -q8 $compname -$q9 
+
         }
     }
 }
+# Convert File path to folder path
+$filePath = Split-Path $speedTestExe
 # Check if Speed Test executable exists on computer.
 if (Test-Path $speedTestExe) {
     speedtestcli -serverID $serverID -speedTestExe $speedTestExe
 } else {
     # Check if 'C:\Temp\speedtest' directory exists
-    if (-not (Test-Path 'C:\Temp')) {
-        # Create 'C:\Temp\speedtest' directory
-        New-Item -Path 'C:\Temp' -ItemType Directory
+    if (-not (Test-Path $filePath)) {
+        New-Item -Path $filePath -ItemType Directory
     }
     # Download Speed Test CLI
     Invoke-WebRequest -Uri $DownloadURL -OutFile 'C:\Temp\speedtest.zip'
     # Extract Speed Test CLI
-    Expand-Archive -Path 'C:\Temp\speedtest.zip' -DestinationPath 'C:\Temp\speedtest'
-    Pause 5
+    Expand-Archive -Path 'C:\Temp\speedtest.zip' -DestinationPath $filePath
     # Run Speed Test
     speedtestcli -serverID $serverID -speedTestExe $speedTestExe
 }
 # Write-Host "Speed Test completed."
 Write-Host "Speed Test completed." -ForegroundColor Green
+
+
+
+$speedTestExe = 'C:\Temp\speedtest\speedtest.exe'
+$DownloadURL = "https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip"
+$filePath = Split-Path $speedTestExe
+
+# Check if Speed Test executable exists on computer.
+if (Test-Path $speedTestExe) {
+    speedtestcli -serverID $serverID -speedTestExe $speedTestExe
+} else {
+    # Check if 'C:\Temp\speedtest' directory exists
+    if (-not (Test-Path $filePath)) {
+        New-Item -Path $filePath -ItemType Directory
+    }
+    # Download Speed Test CLI
+    Invoke-WebRequest -Uri $DownloadURL -OutFile 'C:\Temp\speedtest.zip'
+    # Extract Speed Test CLI
+    Expand-Archive -Path 'C:\Temp\speedtest.zip' -DestinationPath $filePath
+    # Run Speed Test
+    speedtestcli -serverID $serverID -speedTestExe $speedTestExe
+}

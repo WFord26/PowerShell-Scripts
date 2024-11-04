@@ -11,36 +11,40 @@
 .NOTES
     Author: William Ford
     Date: 10/29/2024
-    Version: 1.0
+    Version: 1.5
+    Changelog: 
+        - Version 1.0: Initial script creation
+        - Version 1.5: Updated function to operate off of Error Code.
 #>
 # Define the function to fix the issue
 function Fix-ScanFileFailure {
     param (
         [string]$source,
         [string]$itemName,
-        [string]$message
+        [string]$message,
+        [string]$errorCode
     )
 
-    if ($message -eq "Scan File Failure:The item created time or modified time is not supported") {
+    if ($errorCode -eq "0x01110011") {
         # Set the date created for the item to the last modified date
         $item = Get-Item $source
         $lastModified = $item.LastWriteTime
         $item.CreationTime = $lastModified
         Write-Output "Fixed: $itemName"
-    } elseif ($message -contains "Scan File Failure:Path contains invalid characters. Valid path doesn't start or end with space."){
+    } elseif ($errorCode -eq "0x0111000C"){
         $item = Get-Item $source
         $newName = $itemName -replace '[<>:"/\\|?*]', ''
         $newName = $newName.Trim()
         Rename-Item -Path $source -NewName $newName
-        Write-Output "Renamed: $itemName to $newName"
+        Write-Output "Renamed: $(Write-Host $itemName -ForegroundColor Red) to $(Write-Host $newName -ForegroundColor Green)"
     }
 }
 
 # Import the CSV file
-$csvFilePath = "C:\Path\To\CombinedItemFailureReport.csv"
+$csvFilePath = "C:\Path\to\the\CombinedItemFailureReport.csv"
 $items = Import-Csv -Path $csvFilePath
 
 # Iterate through each item in the CSV
 foreach ($item in $items) {
-    Fix-ScanFileFailure -source $item.Source -itemName $item.'Item name' -message $item.Message
+    Fix-ScanFileFailure -source $item.Source -itemName $item.'Item name' -message $item.Message -errorCode $item.'Error code'
 }

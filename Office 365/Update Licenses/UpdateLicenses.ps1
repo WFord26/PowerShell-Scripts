@@ -112,7 +112,7 @@ function BuildLogFile {
     New-Item -Path $logPath -Name $logFile -ItemType "file"
     Start-Transcript -Append $logCombined
     Write-Host "`n-----------------------------------------------------------------------------------------`n"
-    Write-Host "                   Office 365 License Removal Script"
+    Write-Host "                   Office 365 License Administration Script"
     Write-Host "`n-----------------------------------------------------------------------------------------`n"
     pause
     Write-Host " "
@@ -173,7 +173,7 @@ do
                  } else {
                      Write-Warning "Starting Updates"
                      $usersList | ForEach-Object {
-                         Set-MsolUserLicense -UserPrincipalName $_ -AddLicenses $gridAddLicenses -RemoveLicenses $gridRemoveLicenses
+                         Set-MsolUserLicense -UserPrincipalName $_ -AddLicenses $gridAddLicenses 
                          Write-Output "$_ had $gridAddJoined added."
                      }
                      Write-Host "Updates completed!" -ForegroundColor Green

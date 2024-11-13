@@ -12,7 +12,10 @@
 .NOTES
     Author: William Ford
     Date: 10/29/2024
-    Version: 1.0
+    Version: 1.1
+    Revision History:
+        1.0 - Initial version
+        1.1 - Added error handling for calculating folder size.
 #>
 $sharePath = "\\server\share"  # Replace with the actual share path
 
@@ -20,12 +23,16 @@ $folders = Get-ChildItem -Path $sharePath -Directory
 
 $results = foreach ($folder in $folders) {
     $folderSize = (Get-ChildItem -Path $folder.FullName -Recurse -Force | Measure-Object -Property Length -Sum).Sum
-    $folderSizeInGB = $folderSize / 1024
-    $files = Get-ChildItem -Path $folder.FullName -File -Recurse
-    $folders = Get-ChildItem -Path $folder.FullName -Directory -Recurse
-    $folderCount = $folders.Count
-    $fileCount = $files.Count
-
+    if ($error) {
+        Write-Host "An error occurred while calculating the $folder.FullName folder size."
+        continue
+    }else{
+        $folderSizeInGB = $folderSize / 1024
+        $files = Get-ChildItem -Path $folder.FullName -File -Recurse
+        $folders = Get-ChildItem -Path $folder.FullName -Directory -Recurse
+        $folderCount = $folders.Count
+        $fileCount = $files.Count
+    }
     [PSCustomObject]@{
         FolderName = $folder.Name
         FolderSizeGB = $folderSizeInGB

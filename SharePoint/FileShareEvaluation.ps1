@@ -27,7 +27,7 @@ $results = foreach ($folder in $folders) {
         Write-Host "An error occurred while calculating the $folder.FullName folder size."
         continue
     }else{
-        $folderSizeInGB = $folderSize / 1024
+        $folderSizeInGB = $folderSize / (1024*1024*1024)
         $files = Get-ChildItem -Path $folder.FullName -File -Recurse
         $folders = Get-ChildItem -Path $folder.FullName -Directory -Recurse
         $folderCount = $folders.Count

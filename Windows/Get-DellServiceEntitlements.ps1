@@ -172,8 +172,8 @@ function Get-SerialNumber{
             Exit
         }
 
-        $csvContent = Import-Csv -Path $csvPath
-        foreach ($row in $csvContent) {
+        $script:csvContent = Import-Csv -Path $csvPath
+        foreach ($row in $script:csvContent) {
             $serviceTag = $row.ServiceTag
             Get-DellWarranty -serviceTag $serviceTag
             $warranty | Out-File -FilePath "$($csvPath).json" -Append

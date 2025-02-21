@@ -161,8 +161,8 @@ function Get-SerialNumber{
             Exit
         }
 
-        $csvContent = Import-Csv -Path $csvPath
-        foreach ($row in $csvContent) {
+        $script:csvContent = Import-Csv -Path $csvPath
+        foreach ($row in $script:csvContent) {
             $serviceTag = $row.ServiceTag
             Get-DellWarranty -serviceTag $serviceTag
             $warranty | Out-File -FilePath "$($csvPath).json" -Append
@@ -449,13 +449,13 @@ function Update-CWMConfig {
                 Write-Host "CSV file not found at path: $csvPath"
                 WantToTryAgain
             }
-            $csvContent = Import-Csv -Path $csvPath
+            $script:csvContent = Import-Csv -Path $csvPath
             # Check if CSV file has the correct headers
-            if ($csvContent[0].PSObject.Properties.Name -notcontains 'Configuration Name') {
+            if ($script:csvContent[0].PSObject.Properties.Name -notcontains 'Configuration Name') {
                 Write-Host "CSV file does not contain the 'Configuration Name' header"
                 WantToTryAgain
             }
-            foreach ($row in $csvContent) {
+            foreach ($row in $script:csvContent) {
                 $configName = $row.'Configuration Name'
                 $cwmDevice = Get-CWMCompanyConfiguration -condition "type/name like 'Switch' or type/name like 'managed worksatation' and name = '$configName' and status/id = 1"
                 # Check if the configuration exists

@@ -38,10 +38,4 @@ function Create-FileSharePermissionsExcel {
             $usersPermissions | Export-Excel -Path $ExcelFile -WorksheetName $foldername -TableName $foldername -AutoSize -AutoFilter -Title "$foldername Users Permissions" -TitleBold -TitleSize 16 
         }
     }
-
-    # Import Unsupport File Names CSV
-    $unsupportedCharsCSV = Import-Csv -Path "unsupported_filenames_$($share).csv"
-
-    # Export to Excel
-    $unsupportedCharsCSV | Export-Excel -Path $ExcelFile -WorksheetName "Unsupported Characters" -TableName "Unsupported Characters" -AutoSize -AutoFilter -Title "Unsupported Filename Characters" -TitleBold -TitleSize 16
 }

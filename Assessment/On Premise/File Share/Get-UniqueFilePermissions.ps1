@@ -53,6 +53,7 @@ function Get-UniqueFilePermissions {
             
             # Loop through the members and add the permissions to the usersPermissions array
             foreach ($member in $members) {
+                
                 $usersPermissions += [PSCustomObject]@{
                     Member = $member
                     Folder = $permission.FolderName

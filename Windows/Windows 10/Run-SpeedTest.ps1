@@ -26,7 +26,7 @@
 #>
 
 param (
-    [int]$serverID = 62644,
+    [int]$serverID = 68864,
     [string]$speedTestExe = 'C:\Temp\speedtest\speedtest.exe',
     [string]$DownloadURL = "https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip"
 )
@@ -45,7 +45,7 @@ Function formEntry {
     process {
         $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
         $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0"
-        Invoke-WebRequest -UseBasicParsing -Uri "https://forms.office.com/formapi/api/271cf5e9-b477-4759-a5d6-6d459bb35f3e/users/769fcfc0-5a70-4751-8b2a-4262fe8984ca/forms('6fUcJ3e0WUel1m1Fm7NfPsDPn3ZwWlFHiypCYv6JhMpUNkFQOURKV0owOVJMOTdFM1k3NlhSWFZQVi4u')/responses" `
+        Invoke-WebRequest -UseBasicParsing -Uri "https://forms.office.com/formapi/api/271cf5e9-b477-4759-a5d6-6d459bb35f3e/groups/189368c5-b8d7-4f0a-925c-323047cda8f7/forms('6fUcJ3e0WUel1m1Fm7NfPsVokxjXuApPklwyMEfNqPdUNkFQOURKV0owOVJMOTdFM1k3NlhSWFZQViQlQCN0PWcu')/responses" `
         -Method "POST" `
         -WebSession $session `
         -Headers @{
@@ -59,13 +59,14 @@ Function formEntry {
         "dnt"="1"
         "odata-maxverion"="4.0"
         "origin"="https://forms.office.com"
-        "referer"="https://forms.office.com/Pages/ResponsePage.aspx?id=6fUcJ3e0WUel1m1Fm7NfPsDPn3ZwWlFHiypCYv6JhMpUNkFQOURKV0owOVJMOTdFM1k3NlhSWFZQVi4u"
+        "referer"="https://forms.office.com/Pages/ResponsePage.aspx?id=6fUcJ3e0WUel1m1Fm7NfPsVokxjXuApPklwyMEfNqPdUNkFQOURKV0owOVJMOTdFM1k3NlhSWFZQViQlQCN0PWcu"
         } `
         -ContentType "application/json" `
         -Body "{`"startDate`":`"2024-07-12T23:48:50.024Z`",`"submitDate`":`"2024-07-12T23:49:37.720Z`",`"answers`":`"[{\`"questionId\`":\`"rb53980291c8b493c8ed5fb709e527f71\`",\`"answer1\`":\`"$q1\`"},{\`"questionId\`":\`"rce8f0215991045b8a35d0629e6232bb8\`",\`"answer1\`":\`"$q2\`"},{\`"questionId\`":\`"r63b8f050fc51463cacac2d4d97370227\`",\`"answer1\`":\`"$q3\`"},{\`"questionId\`":\`"r10b49a13a6dd48c18fa2552abd9c66c9\`",\`"answer1\`":\`"$q4\`"},{\`"questionId\`":\`"r1afc4dfe7223435688fb3790f2747856\`",\`"answer1\`":\`"$q5\`"},{\`"questionId\`":\`"rddca130ab5ac4cd99f9872517c3b892f\`",\`"answer1\`":\`"$q6\`"},{\`"questionId\`":\`"rdc5320917f2f42729bb3cdd0d511a362\`",\`"answer1\`":\`"$q7\`"},{\`"questionId\`":\`"r3985db2b6edb4cf39f9ac04f7ee85350\`",\`"answer1\`":\`"$q8\`"}]`"}";
 
     }
 }
+
 
 Function speedtestcli {
     param (
@@ -82,6 +83,7 @@ Function speedtestcli {
             Write-Host "Speed Test failed. Please try again."
             exit
         } else {
+            $speedTestOutput
             $compname = hostname
             # Convert Bandwidth from bits to megabits
             $downloadSpeed = [math]::Round($speedTestOutput.Download.Bandwidth / 125000, 2)

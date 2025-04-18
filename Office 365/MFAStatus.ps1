@@ -1,23 +1,4 @@
 <#
-.Synopsis
-  Get the MFA status for all users or a single user.
-
-.DESCRIPTION
-  This script will get the Azure MFA Status for your users. You can query all the users, admins only or a single user.
-   
-	It will return the MFA Status, MFA type (
-
-.NOTES
-  Name: Get-MFAStatus
-  Author: R. Mens - LazyAdmin.nl
-  Version: 1.6
-  DateCreated: jan 2021
-  Purpose/Change: Added registered email and phonenumber
-	Thanks to: Anthony Bartolo
-
-.LINK
-  https://lazyadmin.nl
-
 .EXAMPLE
   Get-MFAStatus
 
@@ -45,16 +26,17 @@
   for a department only.
 
 .EXAMPLE
-  Get-MFAStatus -withOutMFAOnly | Export-CSV c:\temp\userwithoutmfa.csv -noTypeInformation
+  Get-MFAStatus -withOutMFAOnly | Export-CSV c:\temp\userswithoutmfa.csv -noTypeInformation
 
   Get all users without MFA and export them to a CSV file
 #>
+Function Get-MFAStatus {
 [CmdletBinding(DefaultParameterSetName="Default")]
 param(
   [Parameter(
     Mandatory = $false,
     ParameterSetName  = "UserPrincipalName",
-    HelpMessage = "Enter a single UserPrincipalName or a comma separted list of UserPrincipalNames",
+    HelpMessage = "Enter a single UserPrincipalName or a comma separated list of UserPrincipalNames",
     Position = 0
     )]
   [string[]]$UserPrincipalName,
@@ -97,13 +79,13 @@ param(
     ValueFromPipeline = $false
   )]
   # Check if a user is an admin. Set to $false to skip the check
-  [switch]$listAdmins = $true
+  [switch]$listAdmins
 )
 
 
 
 # Connect to Msol
-if ((Get-Module -ListAvailable -Name MSOnline) -eq $null)
+if ($null -eq (Get-Module -ListAvailable -Name MSOnline))
 {
   Write-Host "MSOnline Module is required, do you want to install it?" -ForegroundColor Yellow
       
@@ -119,7 +101,7 @@ if ((Get-Module -ListAvailable -Name MSOnline) -eq $null)
   }
 }
 
-if ((Get-Module -ListAvailable -Name MSOnline) -ne $null)
+if ($null -ne (Get-Module -ListAvailable -Name MSOnline))
 {
   if(-not (Get-MsolDomain -ErrorAction SilentlyContinue))
   {
@@ -166,8 +148,8 @@ if ($PSBoundParameters.ContainsKey('UserPrincipalName')) {
         MFAEnabled        = if ($MsolUser.StrongAuthenticationMethods) {$true} else {$false}
         MFAType           = $Method
 				MFAEnforced       = if ($MsolUser.StrongAuthenticationRequirements) {$true} else {"-"}
-        "Email Verification" = if ($msoluser.StrongAuthenticationUserDetails.Email) {$msoluser.StrongAuthenticationUserDetails.Email} else {"-"}
-        "Registered phone" = if ($msoluser.StrongAuthenticationUserDetails.PhoneNumber) {$msoluser.StrongAuthenticationUserDetails.PhoneNumber} else {"-"}
+        "Email Verification" = if ($MsolUser.StrongAuthenticationUserDetails.Email) {$MsolUser.StrongAuthenticationUserDetails.Email} else {"-"}
+        "Registered phone" = if ($MsolUser.StrongAuthenticationUserDetails.PhoneNumber) {$MsolUser.StrongAuthenticationUserDetails.PhoneNumber} else {"-"}
       }
     }
 		catch {
@@ -207,8 +189,8 @@ elseif ($adminsOnly) {
       "Phone call verification" = if ($MsolUser.StrongAuthenticationMethods.MethodType -contains "TwoWayVoiceMobile") {$true} else {"-"}
       "Hardware token or authenticator app" = if ($MsolUser.StrongAuthenticationMethods.MethodType -contains "PhoneAppOTP") {$true} else {"-"}
       "Authenticator app" = if ($MsolUser.StrongAuthenticationMethods.MethodType -contains "PhoneAppNotification") {$true} else {"-"}
-      "Email Verification" = if ($msoluser.StrongAuthenticationUserDetails.Email) {$msoluser.StrongAuthenticationUserDetails.Email} else {"-"}
-      "Registered phone" = if ($msoluser.StrongAuthenticationUserDetails.PhoneNumber) {$msoluser.StrongAuthenticationUserDetails.PhoneNumber} else {"-"}
+      "Email Verification" = if ($MsolUser.StrongAuthenticationUserDetails.Email) {$MsolUser.StrongAuthenticationUserDetails.Email} else {"-"}
+      "Registered phone" = if ($MsolUser.StrongAuthenticationUserDetails.PhoneNumber) {$MsolUser.StrongAuthenticationUserDetails.PhoneNumber} else {"-"}
 			MFAEnforced = if ($MsolUser.StrongAuthenticationRequirements) {$true} else {"-"}
     }
   }
@@ -241,8 +223,8 @@ else {
             MFAEnabled        = $false
             MFAType           = "-"
 						MFAEnforced       = if ($MsolUser.StrongAuthenticationRequirements) {$true} else {"-"}
-            "Email Verification" = if ($msoluser.StrongAuthenticationUserDetails.Email) {$msoluser.StrongAuthenticationUserDetails.Email} else {"-"}
-            "Registered phone" = if ($msoluser.StrongAuthenticationUserDetails.PhoneNumber) {$msoluser.StrongAuthenticationUserDetails.PhoneNumber} else {"-"}
+            "Email Verification" = if ($MsolUser.StrongAuthenticationUserDetails.Email) {$MsolUser.StrongAuthenticationUserDetails.Email} else {"-"}
+            "Registered phone" = if ($MsolUser.StrongAuthenticationUserDetails.PhoneNumber) {$MsolUser.StrongAuthenticationUserDetails.PhoneNumber} else {"-"}
           }
         }
       }else{
@@ -263,3 +245,4 @@ else {
       }
     }
   }
+}

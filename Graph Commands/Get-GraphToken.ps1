@@ -3,12 +3,13 @@ function Get-GraphToken {
     param (
         [Parameter(Mandatory = $true)]
         [string]$TenantId,
-
         [Parameter(Mandatory = $false)]
         [string]$ClientId = "14d82eec-204b-4c2f-b7e8-296a70dab67e", # Microsoft Graph PowerShell client ID
-
         [Parameter(Mandatory = $false)]
-        [string]$ClientSecret
+        [string]$ClientSecret,
+        [Parameter(Mandatory = $false)]
+        [array]$Scope = @("https://graph.microsoft.com/.default")
+
     )
 
     # Import the Microsoft Authentication Library (MSAL) module if not already installed
@@ -24,14 +25,14 @@ function Get-GraphToken {
             ClientId     = $ClientId
             TenantId     = $TenantId
             ClientSecret = $ClientSecret
-            Scopes       = "https://graph.microsoft.com/.default"
+            Scopes       = $Scope
         }
     } else {
         $authParams = @{
             ClientId = $ClientId
             TenantId = $TenantId
             Interactive = $true
-            Scopes = "https://graph.microsoft.com/.default"
+            Scopes = $Scope
         }
     }
     
